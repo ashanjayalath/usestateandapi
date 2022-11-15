@@ -1,0 +1,58 @@
+.basic-main-window{
+    width:auto;
+    height:auto;
+}
+.basic-second-window{
+    width:auto;
+    height:auto;
+    padding-top: 20px;
+}
+.basic-menu-view-title{
+    font-weight: bold;
+    font-size: 18px;
+    color: #344767;
+}
+.acnt-btn {
+    text-align:left;
+    text-align-all: center;
+    padding-right: 50px;
+    padding-left:10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width:100%;
+    height:auto;
+    color: #344767;
+}
+.acnt-btn:hover{
+    text-align:left;
+    text-align-all: center;
+    padding-left:10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: #344767;
+    background-color: rgba(148, 124, 236, 0.29);
+    border-radius:5px;
+    cursor:pointer;
+    width:100%;
+    height:auto;
+    transition:.5s;
+}
+.pro-user-avatar{
+    cursor: pointer;
+    width: auto;
+    height: auto;
+}
+.pro-name{
+    font-weight: bold;
+    font-size: 20px;
+}
+.pro-name-sub{
+    font-size: 15px;
+    color: #7b809a;
+}
+.pro-switch{
+    margin-left:80%;
+}
+.pro-switch-btn{
+    margin-left:90%;
+}
