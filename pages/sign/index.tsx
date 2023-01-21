@@ -1,8 +1,53 @@
-import {Row, Col, Input, Switch, Button, Space, Form, message, Card} from "antd";
+import {Row, Col, Input, Switch, Button, Space, Form, message, Card, Spin} from "antd";
 import Link from "next/link";
-
+import {USER_SIGNIN as USIGN} from "../../components/apiCall/allLinks";
+import {CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled, LoadingOutlined} from "@ant-design/icons";
+import {useState} from "react";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import Router from 'next/router';
+import {FCRUD} from '../../components/firebaseDatabaseConnector';
 
 export default function Sign() {
+
+    const [spinEnable,setSpinEnable]=useState<boolean>(false)
+    const [antIconLoading,setAntIconLoading]=useState(<LoadingOutlined style={{ color:"blue" }} spin />)
+    const [tipText,setTipText]=useState<string>("");
+    const [tipTextColor,setTipTextColor]=useState<string>("rgba(0,0,0,0.58)");
+
+
+    const signin=async (getFormData:any)=>{
+        const auth = FCRUD.auth;
+        let email = getFormData.Email
+        let password = getFormData.Password
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                // const user = userCredential.user;
+                setTimeout(()=>{
+                    setSpinEnable(false)
+                    setTipText("")
+                    setTipTextColor("rgba(0,0,0,0.58)")
+                    setAntIconLoading(<LoadingOutlined style={{ color:"blue" }} spin />)
+                    //next page eka load krnna
+                    Router.push('/home')
+                },2000)
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                setTipTextColor("red")
+                setAntIconLoading( <CloseCircleFilled style={{ color:"red",backgroundColor:"white" }}/>)
+                setTipText("SignIn Failed.")
+                setTimeout(()=>{
+                    setTipText("")
+                    setTipTextColor("rgba(0,0,0,0.58)")
+                    setAntIconLoading(<LoadingOutlined style={{ color:"blue" }} spin />)
+                    setSpinEnable(false)
+                },3000)
+                message.warning(errorMessage)
+            });
+    }
+
 
     return<>
         <Row>
@@ -23,38 +68,39 @@ export default function Sign() {
                                    </div>
                                    <div>
                                        {/*<Space direction={"vertical"} size={10} wrap={false}>*/}
-                                       <Form  autoComplete="off">
-                                           <Form.Item rules={[{ required: true,min:4, message: 'Please enter your email!' }]}>
-                                               <Input className={"emailBox"} placeholder={"Email"} allowClear/>
-                                           </Form.Item>
-                                           <Form.Item rules={[{ required: true,min:4, message: 'Please enter your password!' }]}>
-                                               <Input.Password placeholder = {"Password"} className={"passBox"} allowClear/>
+                                       <Spin spinning={spinEnable} indicator={antIconLoading} tip={tipText} style={{color:tipTextColor}}>
 
-                                           </Form.Item>
-                                           {/*<Space direction={"horizontal"} size={10}>*/}
+                                           <Form onFinish={signin} >
+                                               <Form.Item name={['Email']} rules={[{ required: true,min:4, message: 'Please enter your email!' }]}>
+                                                   <Input className={"emailBox"} placeholder={"Email"} value={"shanjayalath225@gmail.com"} allowClear/>
+                                               </Form.Item>
+                                               <Form.Item name={['Password']} rules={[{ required: true,min:4, message: 'Please enter your password!' }]}>
+                                                   <Input.Password placeholder = {"Password"} className={"passBox"} allowClear/>
 
+                                               </Form.Item>
+                                               {/*<Space direction={"horizontal"} size={10}>*/}
+                                               <Form.Item name="remember" className="aligin-center" valuePropName="checked">
+                                                   <Switch defaultChecked size={"small"}/>
+                                                   <span style={{paddingLeft:10}}>Remember me</span>
+                                                   <Link href="../forget_Password" className="text-dark font-bold">
+                                                       <span style={{paddingLeft:54}}>Forget password ?</span>
+                                                   </Link>
+                                                 </Form.Item>
 
-                                           <Form.Item name="remember" className="aligin-center" valuePropName="checked">
-                                               <Switch defaultChecked size={"small"}/>
-                                               <span style={{paddingLeft:10}}>Remember me</span>
-                                               <Link href="../forget_Password" className="text-dark font-bold">
-                                                   <span style={{paddingLeft:54}}>Forget password ?</span>
-                                               </Link>
-                                             </Form.Item>
+                                               {/*</Space>*/}
 
-                                           {/*</Space>*/}
-
-                                           <Form.Item>
-                                               <Button
-                                                   type="primary"
-                                                   htmlType="submit"
-                                                   style={{ width: "100%" ,backgroundColor:"#4826f6",border:"none",borderRadius:5}}>
-                                                   SIGN IN
-
-                                               </Button>
-                                           </Form.Item>
-                                       </Form>
-
+                                               <Form.Item>
+                                                   <Button
+                                                       type="primary"
+                                                       htmlType="submit"
+                                                       style={{ width: "100%" ,backgroundColor:"#4826f6",border:"none",borderRadius:5}}
+                                                       onClick={()=>setSpinEnable(true)}
+                                                   >
+                                                       SIGN IN
+                                                   </Button>
+                                               </Form.Item>
+                                           </Form>
+                                       </Spin>
                                            <div className={"sign-options"}>
                                                <Row gutter={4}>
                                                    <Col span={12}>

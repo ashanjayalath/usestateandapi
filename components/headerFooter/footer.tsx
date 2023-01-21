@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Layout, Row, Col, List, Divider, Space} from "antd";
 import {
     TwitterOutlined,
@@ -16,93 +16,40 @@ import {
 const { Footer } = Layout;
 
 export default function FooterDesign() {
+    const [footerColor,setFooterColor]=useState("rgba(255,255,255,0.44)")
     return<>
-        <Footer className={"footer"}>
+        <div className={"footer"}>
             <Row>
-                <Col span={14} offset={5}>
-                    <Row>
-                        <Col span={6}>
-                            <div className={"footer-link-header"}>
-                                <h3>Company</h3>
-                                <h4>About Us</h4>
-                                <h4>Freebies</h4>
-                                <h4>Premium</h4>
-                                <h4>Blog</h4>
-                                <h4>Get Coupon</h4>
-                            </div>
-                        </Col>
-                        <Col span={6}>
-                            <div className={"footer-link-header"}>
-                                <h3>Company</h3>
-                                <h4>About Us</h4>
-                                <h4>Freebies</h4>
-                                <h4>Premium</h4>
-                                <h4>Blog</h4>
-                                <h4>Get Coupon</h4>
-                            </div>
-                        </Col>
-                        <Col span={6}>
-                            <div className={"footer-link-header"}>
-                                <h3>Company</h3>
-                                <h4>About Us</h4>
-                                <h4>Freebies</h4>
-                                <h4>Premium</h4>
-                                <h4>Blog</h4>
-                                <h4>Get Coupon</h4>
-                            </div>
-                        </Col>
-                        <Col span={6}>
-                            <div className={"footer-link-header"}>
-                                <h3>Company</h3>
-                                <h4>About Us</h4>
-                                <h4>Freebies</h4>
-                                <h4>Premium</h4>
-                                <h4>Blog</h4>
-                                <h4>Get Coupon</h4>
-                            </div>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={22} offset={1}>
-                    <hr className={"footer-horizontal-bar"}/>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={6} offset={9}>
+                <Col>
                     <div className={"footer-logo"}>
                         <img src={"logo.png"} width={50} height={"auto"}/>
-                        <p>Bk CiTy</p><br/>
+                        <p style={{color:footerColor}}>Bk CiTy</p><br/>
                     </div>
-
+                </Col>
+                <Col span={8} offset={8}>
+                    <div className={"footer-text-version"}>
                         <Row>
-                            <Col>
+                            <Col span={11} offset={3}>
                                 <Space direction={"horizontal"} size={20}>
-                                    <TwitterOutlined className={"footer-menu-icon"}/>
-                                    <SkypeOutlined className={"footer-menu-icon"}/>
-                                    <GooglePlusOutlined className={"footer-menu-icon"}/>
-                                    <LinkedinOutlined className={"footer-menu-icon"}/>
-                                    <SlackOutlined className={"footer-menu-icon"}/>
-                                    <InstagramOutlined className={"footer-menu-icon"}/>
-                                    <WhatsAppOutlined className={"footer-menu-icon"}/>
+                                    <TwitterOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <SkypeOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <GooglePlusOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <LinkedinOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <SlackOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <InstagramOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
+                                    <WhatsAppOutlined className={"footer-menu-icon"} style={{color:footerColor}}/>
                                 </Space>
                             </Col>
                         </Row>
-
-
-                </Col>
-            </Row>
-            <Row>
-                <Col span={14} offset={5}>
-                    <div className={"footer-text-version"}>
-                        <p>
-                            © 2022 Bk CiTy, all rights reserved. Made with for a better web.
-                        </p>
+                        <Row>
+                            <p style={{color:footerColor,marginTop:25}}>
+                                © 2022 Bk CiTy, all rights reserved. Made with for a better web.
+                            </p>
+                        </Row>
                     </div>
                 </Col>
             </Row>
 
-        </Footer>
+        </div>
     </>
 }

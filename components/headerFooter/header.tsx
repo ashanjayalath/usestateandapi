@@ -9,131 +9,30 @@ import {
     Input,
     List,
     Button,
-    Tooltip, Card, Switch, Drawer, Menu, MenuProps
+    Tooltip, Card, Switch, Drawer, Menu, MenuProps, Affix, Spin, Space, message
 } from "antd";
 import {
-    DashboardFilled,
-    RightOutlined,
     BellFilled,
-    GiftOutlined,
-    UserOutlined,
     CheckOutlined,
-    LogoutOutlined,
-    ShoppingCartOutlined,
-    CodepenCircleOutlined,
     EyeOutlined,
     RestOutlined,
-    SketchOutlined,
-    IeOutlined,
-    AlibabaOutlined,
-    DropboxOutlined,
-    SlackSquareOutlined,
-    DingdingOutlined,
-    GithubOutlined,
-    QqOutlined,
     DownOutlined,
-    SearchOutlined,
-    CloseCircleOutlined, CloseOutlined, SettingFilled
+    CloseCircleOutlined, CloseOutlined, SettingFilled, LoadingOutlined, SearchOutlined
 } from "@ant-design/icons";
+import { FaShoppingBag , FaCloudDownloadAlt} from 'react-icons/fa';
+import { MdHelpCenter,MdCategory,MdNoteAlt } from "react-icons/md";
+import { RiCustomerService2Fill } from "react-icons/ri";
+import {IoLanguage} from "react-icons/io5";
+// import {logout} from '../firebase';
 import Link from "next/link";
-import LoadingBar from 'react-top-loading-bar'
 import React, {useState} from "react";
 import Notification from "./notification";
-import {ColumnsType} from "antd/es/table";
 import {HexColorPicker} from "react-colorful";
-
-const { Header, Sider, Content } = Layout;
-
-const menuTitle=(getIcon:any,name:any)=>{
-    return(
-        <Col>
-            <div className={"card-title"}>
-                <Row>
-                    <Col>
-                        {getIcon}
-                    </Col>
-                    <Col>
-                        <h4 className={"title"}>{name}</h4>
-                    </Col>
-                </Row>
-            </div>
-        </Col>
-    )
-}
-const menuBtn=(name:string)=>{
-    return(
-        <div className={"card-btn"}>
-            {name}
-        </div>
-    )
-}
-const menuBtnIcon=(name:string,getIcon:any)=>{
-    return(
-        <div className={"card-btn"}>
-            <Row>
-                <Col>
-                    {getIcon}
-                </Col>
-                <Col>
-                    <div style={{paddingLeft:10}}>
-                        {name}
-                    </div>
-
-                </Col>
-            </Row>
-
-        </div>
-    )
-}
-const subMenuBtn=(name:string,con:any,place:any,opacity:any)=>{
-    return(
-        <Popover content={con} placement={place} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:opacity}} arrowPointAtCenter>
-        {/*<Popover content={con} placement={place} overlayInnerStyle={{borderRadius:10}} >*/}
-            <div className={"card-sub-btn"}>
-                <Row>
-                    <Col>
-                        {name}
-                    </Col>
-                    <Col>
-                        <div className={"btn-arrow"}><RightOutlined /></div>
-                    </Col>
-                </Row>
-            </div>
-        </Popover>
-    )
-}
-const divider=()=> {
-    return(
-        <Col>
-            <Divider type={"vertical"} style={{height: "100%", marginTop: 50, marginBottom: 50, color: "red"}}/>
-        </Col>
-    )
-}
-const popover=(content:any,place:any,navigationText:string,icon:any)=>{
-    return(
-        <Popover content={content} placement={place} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10}} className={"pop-back"} arrowPointAtCenter>
-            <Row>
-                <div style={{paddingLeft:"50%"}} >
-
-                       {icon}
-
-                </div>
-            </Row>
-            <Row>
-                <span className={"nav-text"}>{navigationText}<DownOutlined style={{fontSize:8,paddingLeft:5}} /></span>
-            </Row>
-
-        </Popover>
-    )
-}
-
-
-// const Lang=[
-//     {title: 'English', id:'En'},
-//     {title: 'සිංහල', id:'සිංහල'},
-//     {title: 'தமிழ்', id:'தமிழ்'}
-// ]
-
+import {shopping,userList,Lang,careers,Downloads,Service,Help,Category} from "./menuItems";
+import {CRUD,USER_SIGN_OUT} from "../apiCall/allLinks";
+import {FCRUD} from '../firebaseDatabaseConnector';
+import {signOut} from "@firebase/auth";
+import Router from "next/router";
 
 function bajColorChoose(count:number) {
     let def="#8f7cec"
@@ -148,11 +47,74 @@ function bajColorChoose(count:number) {
 }
 
 export default function HeaderDesign() {
-    const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState<any>('');
     const [navColor, setNavColor] = useState<string>("#555555");
-    const[bajCount,setBajCount]=useState<number>(1)
-    const[navFixed,setNavFixed]=useState<any>("fixed")
+    const [open, setOpen] = useState<boolean>(false);
+    const [bajCount,setBajCount]=useState<number>(1)
+    const [navFixed,setNavFixed]=useState<any>("fixed")
+    const [headerTextColor,setHeaderTextColor]=useState("#555555")
+    const [lightDark,setLightDark]=useState("rgba(255,255,255,0.91)")
+    const [blackWhite,setBlackWhite]=useState("#000000")
+    const [langSelsect,setLangSelsect]=useState('E')
+    const [openSearch, setOpenSearch] = useState(false);
+    const [NotiOpen, setNotiOpen] = useState(true);
+    const [prefixIcon,setPrefixIcon]=useState(<SearchOutlined />)
+    let nameList = ['Ashan','Shan','Kalum','Akila','Samith','Nimal','Ranil','Mahinda','Maithree','Akalanka'];
+    let output:any;
+    if(search){
+        output=nameList.filter(value => value.toLowerCase().includes(search.toLowerCase()))
+    }
 
+
+    const logout=()=>{
+        console.log("aaaaaa")
+        const auth = FCRUD.auth;
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            localStorage.setItem('isLogged','false')
+            sessionStorage.clear()
+        }).catch((error) => {
+            // An error happened.
+            message.warning("LogOut Faild Try Again")
+        });
+    }
+
+    const contents=(
+        <div>
+            <Space direction={"horizontal"}>
+                <span style={{fontSize:16,marginLeft:5,fontWeight:"bold"}}>{search}</span>
+            </Space>
+            {/*<hr style={{borderColor:"rgba(9,0,0,0.13)"}}/>*/}
+            <List
+                className={"search-results-list"}
+                grid={{gutter:5,column:1}}
+                dataSource={output}
+                locale={{emptyText:"No Results Found"}}
+                renderItem={items=>(
+                    <List.Item>
+                        <div className={"search-results"} onClick={()=>{setSearch(output[output.indexOf(items)]);setOpenSearch(false);setPrefixIcon(<LoadingOutlined />)}}>
+                            <span className={"search-results-text"}> items </span>
+                        </div>
+                    </List.Item>
+                )}
+            />
+        </div>
+    )
+    const popover=(content:any,place:any,navigationText:string,icon:any)=>{
+        return(
+            <Popover content={content} placement={place} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10}}  className={"pop-back"} arrowPointAtCenter>
+                <Row>
+                    <div style={{paddingLeft:"50%"}} >
+                        {icon}
+                    </div>
+                </Row>
+                <Row>
+                    <span className={"nav-text"} style={{color:headerTextColor}}>{navigationText}<DownOutlined style={{fontSize:8,paddingLeft:5}} /></span>
+                </Row>
+
+            </Popover>
+        )
+    }
 
     const YourComponent = () => {
         return <HexColorPicker color={navColor} onChange={setNavColor} />;
@@ -166,169 +128,74 @@ export default function HeaderDesign() {
         setOpen(false);
     };
 
+    const hide = () => {
+        setNotiOpen(false);
+    };
+
     const noti=(
         <div className={"header-noti"}>
            <Notification />
             <div className={"header-noti-window"}>
                 <Row>
                     <Col span={10} offset={7}>
-                        <span className={"header-noti-clear"}><RestOutlined /> Clear all</span>
+                        <span className={"header-noti-clear"}><RestOutlined onClick={hide}/> Clear all</span>
                         <span className={"header-noti-read"} onClick={()=>setBajCount(0)}><EyeOutlined /> Read All</span>
                     </Col>
                 </Row>
-
-
             </div>
         </div>
     );
 
-    // const translate=(
-    //     <div>
-    //         <List dataSource={Lang} size={"small"} split={false}
-    //               renderItem={item => (
-    //                   <List.Item onClick={()=>{
-    //                       setLangSelsect(item.id)
-    //                   }}>
-    //                       <div style={{cursor:"pointer"}}>
-    //                           <List.Item >{item.title}</List.Item>
-    //                       </div>
-    //                   </List.Item>
-    //         )} style={{fontSize:12}}
-    //         />
-    //     </div>
-    // );
-    const content=(
-        <div >
-            <Row>
-                <Col>
-                    {menuTitle(<DashboardFilled/>,"Dashboard")}
-                </Col>
-                <Col>
-                    {menuTitle(<DashboardFilled/>,"Dashboard")}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {menuBtn("test")}
-                </Col>
-                <Col>
-                    {menuBtn("test 2")}
-                </Col>
-            </Row>
-        </div>
-    );
-    const Sell_on_Daraz=(
+    const translate=(
         <div>
-            <Row>
-                <Col>
-                    {menuTitle(<DashboardFilled />,"Dashboard")}
-                </Col>
-                <Col>
-                    {menuTitle(<CodepenCircleOutlined />,"Dashboard")}
-                </Col>
-                <Col>
-                    {menuTitle(<SketchOutlined />,"Dashboard")}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Row>
-                        <Link href="/tabledata" className="text-dark font-bold">
-                            {menuBtn("Display Table")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        <Link href="/tempoBackup/tabledata" className="text-dark font-bold">
-                         {menuBtn("Display Custom")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        <Link href="/components/card/creditCard" className="text-dark font-bold">
-                            {subMenuBtn("Credit Card",content,"right","95%")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        {menuBtnIcon("Test four",<AlibabaOutlined />)}
-                    </Row>
-                </Col>
-                <Col>
-                    <Row>
-                        <Link href="/tempoBackup/tabledata" className="text-dark font-bold">
-                            {menuBtn("Display Table")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        {menuBtn("Test two")}
-                    </Row>
-                </Col>
-                <Col>
-                    <Row>
-                        <Link href="/tempoBackup/tabledata" className="text-dark font-bold">
-                            {menuBtn("Display Table")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        {menuBtn("Test two")}
-                    </Row>
-                    <Row>
-                        {subMenuBtn("Test one",content,"right","90%")}
-                    </Row>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {menuTitle(<DashboardFilled />,"Dashboard")}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Row>
-                        <Link href="/tempoBackup/tabledata" className="text-dark font-bold">
-                            {menuBtn("Display Table")}
-                        </Link>
-                    </Row>
-                    <Row>
-                        {menuBtn("Test two")}
-                    </Row>
-                    <Row>
-                        {subMenuBtn("Test one",content,"right","85%")}
-                    </Row>
-                </Col>
-            </Row>
-
+            <List dataSource={Lang} size={"small"} split={false}
+                  renderItem={item => (
+                      <List.Item onClick={()=>{
+                          setLangSelsect(item.id)
+                      }}>
+                          <div style={{cursor:"pointer"}}>
+                              <List >{item.title}</List>
+                          </div>
+                      </List.Item>
+            )} style={{fontSize:12}}
+            />
         </div>
     );
 
     const user=(
-        <div>
-            <Row>
-                {menuBtnIcon("My Purchases",<ShoppingCartOutlined />)}
-            </Row>
-            <Row>
-                <Link href="/forget_Password" className="text-dark font-bold">
-                    {menuBtnIcon("Discount Program",<GiftOutlined />)}
-                </Link>
-            </Row>
-            <Row>
-                <Link href="/account" className="text-dark font-bold">
-                    {menuBtnIcon("Account Settings",<UserOutlined />)}
-                </Link>
-            </Row>
-            <Row>
-                <Link href="/sign" className="text-dark font-bold">
-                    {menuBtnIcon("Log Out",<LogoutOutlined />)}
-                </Link>
-            </Row>
+        <List
+            size={"small"}
+            dataSource={userList}
+            split={false}
+            renderItem={item => (
+                <List >
+                    <div
+                        onClick={()=>{
+                                if(item.path==="/sign"){
+                                    logout
+                                }
+                            }
+                        }
+                    >
+                        <Link href={item.path} className="text-dark font-bold">
+                            <div style={{cursor:"pointer"}}>
+                                {item.menu}
+                            </div>
+                        </Link>
+                    </div>
 
-        </div>
-    );
+                </List>
+            )}
+        />
+    )
+
     const menuList=[
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Sell on Daraz",icon:<IeOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}}/>},
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Help",icon:<SlackSquareOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Buyer Protection",icon:<DropboxOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Service",icon:<QqOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Category",icon:<DingdingOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
-        {content:Sell_on_Daraz,place:"bottomLeft",navigationText:"Purchas",icon:<GithubOutlined className={"menu-icon"} style={{color:navColor,fontSize:25}} />}
+        {content:shopping,place:"bottomLeft",navigationText:"Shopping",icon:<FaShoppingBag className={"menu-icon"} style={{color:navColor,fontSize:25}}/>},
+        {content:Downloads,place:"bottomLeft",navigationText:"Downloads",icon:<FaCloudDownloadAlt className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
+        {content:Service,place:"bottomLeft",navigationText:"Service",icon:<RiCustomerService2Fill className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
+        {content:Category,place:"bottomLeft",navigationText:"Category",icon:<MdCategory className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
+        {content:careers,place:"bottomLeft",navigationText:"Careers",icon:<MdNoteAlt className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
+        {content:Help,place:"bottomLeft",navigationText:"Help",icon:<MdHelpCenter className={"menu-icon"} style={{color:navColor,fontSize:25}} />},
     ]
 
     return(
@@ -338,11 +205,6 @@ export default function HeaderDesign() {
                   <Row>
                       <Col span={23}>
                           <span className={"theme-menu-title"}>Material UI Configurator</span>
-                      </Col>
-                      <Col span={1}>
-                          <div className={"theme-close-btn-window"}>
-                              <CloseOutlined className={"theme-close-btn-icon"} onClick={()=>onClose()}/>
-                          </div>
                       </Col>
                   </Row>
                   <Row>
@@ -359,7 +221,7 @@ export default function HeaderDesign() {
                   <div className={"theme-btn-bar"}>
                       <Row gutter={10}>
                           <Col>
-                              <Button type="primary" shape="circle" size={"small"} className={"theme-btn-bar-1"} onClick={()=>setNavColor("#8f7cec")} icon={<IeOutlined/>}> </Button>
+                              <Button type="primary" shape="circle" size={"small"} className={"theme-btn-bar-1"} onClick={()=>setNavColor("#8f7cec")}> </Button>
                           </Col>
                           <Col>
                               <Button type="primary" shape="circle" size={"small"} className={"theme-btn-bar-2"}  onClick={()=>setNavColor("#e500ff")}> </Button>
@@ -420,70 +282,119 @@ export default function HeaderDesign() {
                       <div className={"theme-space-top"}>
                           <Row>
                               <Col span={19}>
-                                  <span className={"theme-menu-normal"} >Light / Dark</span>
+                                  <span className={"theme-menu-normal"} >Light</span>
+                              </Col>
+                              <Switch size={"small"} defaultChecked checkedChildren={<CheckOutlined />}unCheckedChildren={<CloseOutlined />} onChange={(checked)=>{
+                                  if(checked){
+                                      // white
+                                      setNavColor("#555555")
+                                      setBlackWhite("#000000")
+                                      setLightDark("#FFFFFFB5")
+                                      setHeaderTextColor("#555555")
+                                  }else{
+                                      //dark
+                                      setNavColor("#FFFFFFB5")
+                                      setBlackWhite("#ffffff")
+                                      setLightDark("#00000051")
+                                      setHeaderTextColor("#FFFFFFB5")
+                                  }
+                              }}/>
+                          </Row>
+                      </div>
+                      <div className={"theme-space-top"}>
+                          <Row>
+                              <Col span={19}>
+                                  <span className={"theme-menu-normal"} >Sidenav Mini</span>
                               </Col>
                               <Col span={5}>
-                                  <Switch size={"small"} checkedChildren={<CheckOutlined />}unCheckedChildren={<CloseOutlined />} />
+                                  <Switch size={"small"} defaultChecked checkedChildren={<CheckOutlined />}unCheckedChildren={<CloseOutlined />} onChange={(checked)=>{
+                                      if(checked){
+                                          setNavFixed("fixed")
+                                      }else{
+                                          setNavFixed("initial")
+                                      }
+                                  }}/>
                               </Col>
                           </Row>
                       </div>
-                      {/*<hr className={"theme-horizontal"}/>*/}
-                      {/*<div className={"theme-space-top"}>*/}
-                      {/*    <Row>*/}
-                      {/*        <Col span={12}>*/}
-                      {/*            <Button type={"primary"} className={"theme-btn-save"}>Save Changes</Button>*/}
-                      {/*        </Col>*/}
-                      {/*        <Col span={12}>*/}
-                      {/*            <Button className={"theme-btn-default"}>Default</Button>*/}
-                      {/*        </Col>*/}
-                      {/*    </Row>*/}
-                      {/*</div>*/}
                   </div>
               </div>
           </Drawer>
 
           <Layout>
-          <div className={"header-menu-item-window"} style={{position:navFixed,zIndex:1}}>
+          <div className={"header-menu-item-window"} style={{position:navFixed,zIndex:1,backgroundColor:lightDark}}>
               <Row>
-                  <Col span={9}>
+                  <Col lg={9} xl={10} xxl={12}>
                       <div className={"header-main-logo-search-div"}>
                           <Row>
-                              <Col>
-                                  <Link href="/home" >
+                              {/*<Col lg={11} xl={11} xxl={12}>*/}
+                              {/*    /!*small menu icon*!/*/}
+                              {/*</Col>*/}
+                              <Col lg={3} xl={3} xxl={2}>
+                                  <Link href="/" >
                                     <img src={"logo.png"} width={40} height={"auto"}/>
                                   </Link>
                               </Col>
-                              <Col>
-                                  <Link href="/home" className="text-dark font-bold">
-                                    <h1>BK CiTy</h1>
+                              <Col lg={5} xl={5} xxl={5}>
+                                  <Link href="/" className="text-dark font-bold" >
+                                    <h1 style={{color:blackWhite}}>BK CiTy</h1>
                                   </Link>
                               </Col>
-                              <Col>
-                                  <div className={"header-search-div"}>
-                                      <Input placeholder={"Search"} className={"header-search"} prefix={<SearchOutlined />} allowClear bordered={false}/>
+                              <Col lg={{span:13,offset:2}} xl={{span:13,offset:2}} xxl={{span:15,offset:1}}>
+                                  <div className={"header-search-div"} >
+                                      <Popover
+                                          className={"search-pop"}
+                                          overlayStyle={{position:"fixed",zIndex:10}}
+                                          content={contents}
+                                          trigger='click'
+                                          open={openSearch}
+                                          showArrow={false}
+                                          placement={"bottom"}
+                                          overlayInnerStyle={{borderRadius:5,width:350}}
+                                          onVisibleChange={()=>{setOpenSearch(false);setPrefixIcon(<SearchOutlined />)}}
+                                      >
+                                          {/*prefix={<SearchOutlined />}*/}
+                                      <Input placeholder={"Search"} className={"header-search"} value={search} suffix={prefixIcon} allowClear bordered={false}
+                                             onChange={(ele) =>{
+                                                 setSearch(ele.target.value);
+                                                 if(ele.target.value===""){
+                                                     setOpenSearch(false)
+                                                     setPrefixIcon(<SearchOutlined />)
+                                                 }else{
+                                                     setPrefixIcon(<LoadingOutlined />);
+                                                     // if(output.length === 0){
+                                                     //     setOpenSearch(false);
+                                                     // }
+                                                         setOpenSearch(true);
+
+                                                 }
+                                             }
+                                             }
+                                      />
+                                      </Popover>
                                   </div>
                               </Col>
                           </Row>
                       </div>
                   </Col>
-                  <Col span={12}>
+                  <Col  lg={11} xl={{span:10}} xxl={7}>
                           <List
-                              grid={{ gutter: 20}}
+                              grid={{ gutter: 1}}
                               dataSource={menuList}
                               split={false}
                               renderItem={item => (
-                                  <List.Item>
+                                  <List>
                                       {popover(item.content,item.place,item.navigationText,item.icon)}
-                                  </List.Item>
+                                  </List>
                               )}
                           />
                   </Col>
-                  <Col span={3}>
+                  <Col lg={{span:3,offset:1}} xl={{span:3}} xxl={{span:2,offset:1}}>
                       <Row gutter={15}>
                           <Col>
                               <div>
                                   <Badge count={bajCount} size={"small"} className={"header-badge-noti"} style={{backgroundColor:bajColorChoose(bajCount)}} >
-                                      <Popover content={noti} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"100%"}} arrowPointAtCenter>
+                                      <Popover content={noti} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"100%"}} arrowPointAtCenter >
                                           <Avatar className={"header-noti-avatar"} shape="circle" size={22} style={{backgroundColor:navColor}} onClick={()=>{
                                               setBajCount(bajCount+1)
                                           }}>
@@ -493,20 +404,25 @@ export default function HeaderDesign() {
                                   </Badge>
                               </div>
                           </Col>
-                          {/*<Col>*/}
-                          {/*    <Badge count={langSelsect} size={"small"} className={"header-lang-icon-badge"} >*/}
-                          {/*        <Popover content={translate} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"90%"}} arrowPointAtCenter>*/}
-                          {/*           <img src="https://img.icons8.com/ios-glyphs/480/null/google-translate.png" width={22} height={22} className={"header-lang-icon"}/>*/}
-                          {/*        </Popover>*/}
-                          {/*    </Badge>*/}
-                          {/*</Col>*/}
                           <Col>
-                              {<SettingFilled onClick={showDrawer} style={{fontSize:18}}/>}
+                              <div>
+                                  <Badge count={langSelsect} size={"small"} className={"header-badge-noti"} style={{backgroundColor:blackWhite,color:lightDark}} >
+                                      <Popover content={translate} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"100%"}} arrowPointAtCenter>
+                                          <Avatar className={"header-noti-avatar"} shape="circle" size={22} style={{backgroundColor:navColor}}>
+                                              <IoLanguage />
+                                          </Avatar>
+                                      </Popover>
+                                  </Badge>
+                              </div>
                           </Col>
                           <Col>
                               <div>
-                                  <Popover content={user} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"95%"}} arrowPointAtCenter>
-                                      <Avatar className={"header-user-avatar"} src={"logo.png"}/>
+                                  <Popover content={user} placement={"bottomRight"} overlayStyle={{position:"fixed",zIndex:1}} overlayInnerStyle={{borderRadius:10,opacity:"95%"}} arrowPointAtCenter title={"Mr.Ashan Jayalath"}>
+                                      <Row>
+                                          <Col>
+                                          <Avatar className={"header-user-avatar"} src={"logo.png"}/>
+                                            </Col>
+                                      </Row>
                                   </Popover>
                               </div>
                           </Col>
@@ -515,6 +431,18 @@ export default function HeaderDesign() {
               </Row>
           </div>
           </Layout>
+
+
+          <div>
+              <Row>
+                  <Col span={2} offset={22}>
+                      <Affix offsetTop={495}>
+                      <Button shape={"circle"} className={"theme-btn-down"} onClick={showDrawer} icon={<SettingFilled size={50}/>}/>
+                      </Affix>
+                  </Col>
+              </Row>
+          </div>
+
 
       </>
     )

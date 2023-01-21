@@ -1,9 +1,61 @@
+
+@media only screen and (width >= 1200px) {
+    .headerControlOne{
+        display: flex;
+    }
+    .headerControlTwo{
+        display: none;
+    }
+}
+
+@media only screen and (width < 1200px) {
+    .headerControlOne{
+        display: none;
+    }
+    .headerControlTwo{
+        display: flex;
+    }
+}
+.index_main_back{
+    padding-top:600px;
+    padding-bottom:200px;
+    width: 100%;
+}
+
+.mainText{
+    word-wrap: break-word;
+    width: 30em;
+
+
+    position: relative;
+    animation-name: example;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes example {
+    from {right: 200px;}
+    to {left: 0px;}
+    /*50%  {background-color:blue; left:200px; top:200px;}*/
+    /*75%  {background-color:green; left:0px; top:200px;}*/
+    /*100% {background-color:red; left:0px; top:0px;}*/
+}
+
+
 .main-card{
     width: 500px;
     height: auto;
     border-radius: 50px;
     box-shadow: 1px 1px 1px 1px rgba(187, 180, 180, 0.62);
 }
+.main-body-card{
+    background-color:white;
+    /*border-radius: 50px 50px 0 0;*/
+    border-radius: 50px;
+    box-shadow: 0 0 10px rgba(187, 180, 180, 0.62);
+}
+
+
 .Add-btn{
     margin-bottom: 10px;
 }
@@ -79,12 +131,6 @@
     padding-right: 20px;
     padding-left: 20px;
 }
-.main-body-card{
-    background-color:white;
-    border-radius: 2% 2% 0 0;
-    box-shadow: 0 0 10px rgba(187, 180, 180, 0.62);
-}
-
 
 .sign-text{
     justify-content: center;
@@ -169,7 +215,7 @@
     opacity: 95%;
     border-radius: 10px;
     background-color: white;
-    box-shadow: 0px 5px 5px 5px rgba(187, 180, 180, 0.62);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.31);
 }
 .fname , .lname , .email ,.phone , .date-pick, .new-pass , .con-pass , .country{
     border-color: #8f7cec;
@@ -178,7 +224,6 @@
     border-radius: 5px;
     width: 100%;
 }
-
 
 .sign-op-btn:hover{
     color: #344767;
@@ -208,6 +253,8 @@
     width: 100%;
     height: 100%;
     border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter:blur(5px);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 .account-menu-view{
@@ -251,4 +298,56 @@
     margin-top:50%;
 }
 .home-image{
+}
+
+
+
+
+
+.bottom-left {
+    position: absolute;
+    bottom: 8px;
+    left: 16px;
+}
+
+.top-left {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+}
+
+.top-right {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+}
+
+.bottom-right {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.container{
+    position: relative;
+    text-align: center;
+    color: #000000;
+    font-size:50px;
+}
+.text-block {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(5px);
 }

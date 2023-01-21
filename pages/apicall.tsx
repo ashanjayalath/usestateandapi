@@ -57,6 +57,7 @@ export default function HomeDesign() {
         // message.success("User Add Successfully..")
     }
 
+    
     useEffect(()=>{
         fetch("https://randomuser.me/api").then((response) =>{
             return response.json();

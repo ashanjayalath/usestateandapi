@@ -1,6 +1,4 @@
-import HeaderDesign from "../../components/headerFooter/header";
-import {Card, Col, Row, Space, Image, Avatar, List, Affix, Switch} from "antd";
-import FooterDesign from "../../components/headerFooter/footer";
+import {Card, Col, Row, Space, Image, Avatar, List, Affix, Switch, Anchor, BackTop} from "antd";
 import {
     UserOutlined,
     FileTextFilled,
@@ -11,47 +9,44 @@ import {
     ReconciliationFilled,
     DeleteFilled
 } from "@ant-design/icons";
-import {useState} from "react";
+import React, {useState} from "react";
 import BasicInfo from "../../components/account/basicInfo";
-import Link from "next/link";
 import Profile from "../../components/account/profile";
-// import HeaderDesign from "../../components/headerFooter/header";
-
-
+import PasswordDetails from "../../components/account/password";
+import AuthDetails from "../../components/account/authDetails";
+import HeaderDesign from "../../components/headerFooter/header";
+import FooterDesign from "../../components/headerFooter/footer";
+import DeleteAccount from "../../components/account/deleteAccount";
+import NotificationWindow from "../../components/account/notificationWindow";
+import SessionsWindow from "../../components/account/sessionsWindow";
+import AccountWindow from "../../components/account/accountWindow";
 const menuList=[
-    {icon:<UserOutlined />,name:"Profile",link:<BasicInfo/>},
+    {icon:<UserOutlined />,name:"Profile",link:<Profile/>},
     {icon:<FileTextFilled />,name:"Basic Info",link:<BasicInfo/>},
-    {icon:<LockFilled />,name:"Change Password",link:<FooterDesign/>},
-    {icon:<UsbFilled />,name:"2F Authantication",link:<BasicInfo/>},
-    {icon:<ContactsFilled />,name:"Accounts",link:<BasicInfo/>},
-    {icon:<SoundFilled />,name:"Notifications",link:<FooterDesign/>},
-    {icon:<ReconciliationFilled />,name:"Sessisions",link:<BasicInfo/>},
-    {icon:<DeleteFilled />,name:"Delete Account",link:<FooterDesign/>}
+    {icon:<LockFilled />,name:"Change Password",link:<PasswordDetails/>},
+    {icon:<UsbFilled />,name:"2F Authantication",link:<AuthDetails/>},
+    {icon:<ContactsFilled />,name:"Accounts",link:<AccountWindow/>},
+    {icon:<SoundFilled />,name:"Notifications",link:<NotificationWindow/>},
+    {icon:<ReconciliationFilled />,name:"Sessisions",link:<SessionsWindow/>},
+    {icon:<DeleteFilled />,name:"Delete Account",link:<DeleteAccount/>}
 ]
-const profileData=[
-    {
-        fname:"Ashan",lname:"Jayalath",gender:"Male",dob:"02/25/1996",email:"shanjayalath225@gmail.com",phone:"0710710712"
-    }
-]
-
 export default function AccountSettings() {
-    const[loadPage,setLoadPage]=useState(<FooterDesign/>)
 
     const menuBtnIcon=(name:string,getIcon:any,link:any)=>{
         return(
-            <div className={"acnt-btn"} onClick={()=> setLoadPage(link)}>
-                <Row>
-                    <Col>
-                        {getIcon}
-                    </Col>
-                    <Col>
-                        <div style={{paddingLeft:10}}>
-                            {name}
-                        </div>
-
-                    </Col>
-                </Row>
-
+            <div className={"acnt-btn"}>
+                <Anchor>
+                    <Row>
+                        <Col>
+                            {getIcon}
+                        </Col>
+                        <Col>
+                            <div style={{paddingLeft:10}}>
+                                {name}
+                            </div>
+                        </Col>
+                    </Row>
+                </Anchor>
             </div>
         )
     }
@@ -68,9 +63,9 @@ export default function AccountSettings() {
                                 dataSource={menuList}
                                 split={false}
                                 renderItem={item => (
-                                    <List.Item>
+                                    <List>
                                         {menuBtnIcon(item.name,item.icon,item.link)}
-                                    </List.Item>
+                                    </List>
                                 )}
                             />
                         </Card>
@@ -80,15 +75,16 @@ export default function AccountSettings() {
 
             <Col span={19}>
                 <div style={{width:"100%",height:"auto"}}>
-                    <Card className={"account-menu-view"} style={{borderRadius:10,width:"auto",marginRight:20}} hoverable={false}>
-                        <Profile/>
-                    </Card>
-                    <Card className={"account-menu-view"}style={{borderRadius:10,marginRight:20,marginTop:20,marginBottom:20,height:"auto",width:"auto"}} hoverable={false}>
-                        {loadPage}
-                    </Card>
+                    <List dataSource={menuList} split={false}
+                          renderItem={item => (
+                              <Card className={"account-menu-view"}style={{borderRadius:10,marginRight:20,marginBottom:20,height:"auto",width:"auto"}} hoverable={false}>
+                                  <List>{item.link}</List>
+                              </Card>
+                          )}
+                    />
                 </div>
             </Col>
         </Row>
-        {/*<FooterDesign/>*/}
+        <BackTop visibilityHeight={500} duration={1500}/>
     </>
 }
