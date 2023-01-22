@@ -32,12 +32,12 @@ export default function Signup() {
 
     const register=async (getFormData:any)=>{
         const auth = FCRUD.auth
-        console.log(getFormData)
         let email = getFormData.Email
         let password = getFormData.Password
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
+                console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
                 const user = userCredential.user;
                 setTipTextColor("green")
                 setAntIconLoading( <CheckCircleFilled style={{ color:"green",backgroundColor:"white" }}/>)
@@ -54,6 +54,8 @@ export default function Signup() {
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
+                console.log(errorCode)
+                console.log(errorMessage)
                 setTipTextColor("red")
                 setAntIconLoading( <CloseCircleFilled style={{ color:"red",backgroundColor:"white" }}/>)
                 setTipText("Registered Failed.")

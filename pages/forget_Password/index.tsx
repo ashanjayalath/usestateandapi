@@ -1,9 +1,28 @@
-import {Button, Card, Col, Form, Input, PageHeader, Row, Space, Switch} from "antd";
+import {Button, Card, Col, Form, Input, message, PageHeader, Row, Space, Switch} from "antd";
 import Link from "next/link";
 import {useState} from "react";
 import CoockiesMessage from "../../components/signOptions/coockiesMessage";
+import {FCRUD} from "../../components/firebaseDatabaseConnector";
+import {sendPasswordResetEmail} from "firebase/auth";
+import Router from "next/router";
 
 export default function ForgetPassword() {
+    const forgetPassword=(getEmail:any)=>{
+        const email=getEmail.Email
+        const auth = FCRUD.auth
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                // Password reset email sent!
+                message.success("Please check email box")
+                Router.push('/sign')
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                message.warning("Something happening")
+            });
+
+    }
     return<>
         <Row>
             <Col span={14} offset={5}>
@@ -23,8 +42,8 @@ export default function ForgetPassword() {
                             <div className={"forget-form-window"}>
                                 <Col>
                                     <div className={"forget-input-window"}>
-                                        <Form  autoComplete="off">
-                                            <Form.Item>
+                                        <Form  autoComplete="off" onFinish={forgetPassword}>
+                                            <Form.Item name={['Email']}>
                                                 <Input className={"forget-email-box"} placeholder={"Email or Phone Number"} allowClear/>
                                             </Form.Item>
                                             <Form.Item>

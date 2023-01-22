@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 const app = firebase.initializeApp(firebaseConfig);
 const dataBase = getFirestore(app);
-const auth = firebase.auth();
+const auth = firebase.auth(app);
 export const FCRUD={
     auth,
     dataBase,

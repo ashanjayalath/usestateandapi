@@ -3,7 +3,15 @@ import Link from "next/link";
 import {USER_SIGNIN as USIGN} from "../../components/apiCall/allLinks";
 import {CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled, LoadingOutlined} from "@ant-design/icons";
 import {useState} from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    getRedirectResult,
+    FacebookAuthProvider,
+    sendPasswordResetEmail
+} from "firebase/auth";
 import Router from 'next/router';
 import {FCRUD} from '../../components/firebaseDatabaseConnector';
 
@@ -13,6 +21,65 @@ export default function Sign() {
     const [antIconLoading,setAntIconLoading]=useState(<LoadingOutlined style={{ color:"blue" }} spin />)
     const [tipText,setTipText]=useState<string>("");
     const [tipTextColor,setTipTextColor]=useState<string>("rgba(0,0,0,0.58)");
+
+    const signinGoogle=()=>{
+        const auth = FCRUD.auth
+        const provider= new GoogleAuthProvider()
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                // @ts-ignore
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                if(user.emailVerified){
+                    Router.push('/home')
+                }else{
+                    message.warning("This Email Not Valid.")
+                }
+                // ...
+            }).catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.customData.email;
+            // The AuthCredential type that was used.
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            // ...
+        });
+    }
+
+    const signinFacebook=()=>{
+        const provider = new FacebookAuthProvider();
+        const auth = FCRUD.auth
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // The signed-in user info.
+                const user = result.user;
+
+                // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+                const credential = FacebookAuthProvider.credentialFromResult(result);
+                // const accessToken = credential.accessToken;
+                console.log(credential)
+                const c=provider.addScope('user_birthday');
+                console.log(c)
+                console.log(user)
+                // ...
+            })
+            .catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = FacebookAuthProvider.credentialFromError(error);
+
+                // ...
+            });
+    }
 
 
     const signin=async (getFormData:any)=>{
@@ -104,13 +171,13 @@ export default function Sign() {
                                            <div className={"sign-options"}>
                                                <Row gutter={4}>
                                                    <Col span={12}>
-                                                       <Button className={"sign-op-btn"} style={{borderRadius:5,boxShadow:"0 0 #fff",width:"100%"}}  >
+                                                       <Button className={"sign-op-btn"} style={{borderRadius:5,boxShadow:"0 0 #fff",width:"100%"}} onClick={signinGoogle} >
                                                            <img src="https://img.icons8.com/fluency/48/null/google-logo.png" style={{width:20,height:"auto"}}/>
                                                            <span style={{paddingLeft:10}}>Google</span>
                                                        </Button>
                                                    </Col>
                                                    <Col span={12}>
-                                                       <Button className={"sign-op-btn"} style={{borderRadius:5,boxShadow:"0 0 #fff",width:"100%"}}>
+                                                       <Button className={"sign-op-btn"} style={{borderRadius:5,boxShadow:"0 0 #fff",width:"100%"}} onClick={signinFacebook}>
                                                            <img src="https://img.icons8.com/fluency/48/null/facebook-new.png" style={{width:20,height:"auto"}}/>
                                                            <span style={{paddingLeft:10}}>Facebook</span>
                                                        </Button>
